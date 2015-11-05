@@ -1,0 +1,98 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>文件拖拽</title>
+<style>
+div { display:none; position:absolute; top:100px; left:100px; width:300px; height:200px; border:1px dotted #999; font-size:20px; text-align:center; line-height:200px; }
+</style>
+<script>
+function DragFile()
+{
+	this.oDiv=document.querySelector('div');
+	this.oSpan=document.querySelector('span');
+	this.timer=null;
+	
+	this.init();	
+}
+
+DragFile.prototype.init=function (){
+	var _this=this;
+	this.browserOver();
+	this.objOper();
+};
+
+DragFile.prototype.browserOver=function (){
+	var _this=this;
+	document.ondragover=function (){
+		clearTimeout(_this.timer);
+		// 悬空，移入
+		_this.oDiv.style.display='block';
+		_this.timer=setTimeout(function (){
+			_this.oDiv.style.display='none';	
+		}, 300);
+	};
+};
+
+DragFile.prototype.objOper=function (){
+	this.showTip();
+	this.showMsg();	
+};
+DragFile.prototype.showMsg=function (){
+	var _this=this;
+	this.oDiv.ondragover=function (){
+		return false;	
+	};
+	this.oDiv.ondrop=function (ev){
+		_this.fileMsg(ev);
+		return false;
+	};	
+};
+
+DragFile.prototype.showTip=function (){
+	var _this=this;
+	this.oDiv.ondragenter=function (){
+		_this.oDiv.innerHTML='释放鼠标';	
+	};
+	
+	this.oDiv.ondragleave=function (){
+		_this.oDiv.innerHTML='请将文件拖拽到此处';	
+	};	
+};
+
+DragFile.prototype.fileMsg=function (oEvent){
+	var oFile=oEvent.dataTransfer.files[0]; // [object FileList]
+	var oDate=oFile.lastModifiedDate;
+	var date=oDate.getFullYear()+'-'+(oDate.getMonth()+1)+'-'+oDate.getDate();
+	this.oSpan.innerHTML='文件名称:'+oFile.name+'<br> 文件大小:'+oFile.size+
+		'<br> 文件修改日期:'+date+
+		'<br> 文件类型:'+oFile.type;	
+};
+
+ready(function (){
+	new DragFile();
+});
+function ready(fn)
+{
+	if(document.addEventListener)
+	{
+		document.addEventListener('DOMContentLoaded',fn, false);
+	}
+	else
+	{
+		document.attachEvent('onreadystatechange',function (){
+			if(document.readyState == 'complete')
+			{
+				fn();	
+			}	
+		});	
+	}
+}
+</script>
+</head>
+
+<body>
+	<span></span>
+	<div>请将文件拖拽到此处！</div>
+</body>
+</html>

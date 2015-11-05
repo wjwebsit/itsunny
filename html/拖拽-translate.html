@@ -1,0 +1,83 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>无标题文档</title>
+<style>
+div { width:100px; height:100px; background:red; }
+</style>
+<script>
+function Drag(id)
+{
+	this.obj=document.getElementById(id);
+	this.disX=0;
+	this.disY=0;
+	this.x=0;
+	this.y=0;
+	this.init();
+}
+
+Drag.prototype.init=function (){
+	// down move up
+	var _this=this;
+	this.obj.onmousedown=function (ev){
+		var oEvent=ev || event;
+		_this.fnDown(oEvent);
+		return false;
+	};
+};
+
+Drag.prototype.fnDown=function (oEvent){
+	this.disX=oEvent.clientX-this.x;
+	this.disY=oEvent.clientY-this.y;
+	
+	var _this=this;
+	document.onmousemove=function (ev){
+		var oEvent=ev || event;
+		_this.fnMove(oEvent);
+	};
+	
+	document.onmouseup=function (){
+		_this.fnUp();	
+	};
+};
+
+Drag.prototype.fnMove=function (oEvent){
+	this.x=oEvent.clientX-this.disX;
+	this.y=oEvent.clientY-this.disY;
+	
+	this.obj.style.transform='translate('+this.x+'px, '+this.y+'px)';
+};
+
+Drag.prototype.fnUp=function (){
+	document.onmousemove=null;
+	document.onmouseup=null;		
+};
+
+ready(function (){
+	new Drag('div1');
+});
+
+function ready(fn)
+{
+	if(document.addEventListener)
+	{
+		document.addEventListener('DOMContentLoaded',fn, false);	
+	}
+	else
+	{
+		document.attachEvent('onreadystatechagne', function (){
+			if(document.readyState == 'complete')
+			{
+				fn();
+			}	
+		});	
+	}	
+}
+</script>
+</head>
+
+<body>
+	<div id="div1"></div>
+</body>
+</html>
